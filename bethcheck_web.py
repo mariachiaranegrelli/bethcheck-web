@@ -91,7 +91,14 @@ if st.button("Suggerisci Categoria Bethesda"):
         categoria = "Categoria III - AUS/FLUS"
     elif "liquido cistico" in [a.lower() for a in adeguatezza] and not atipie:
         categoria = "Categoria Ic - Inadeguato (cistico)"
-    elif any(a in adeguatezza for a in ["< di 6 gruppi con 10 cellule", "Campione acellulato", "Solo sangue", "Solo gel ecografico", "Assenza di cellule target", "Cellule mal valutabili / artefatti"]) and not thyrocytes:
+    elif any(a in adeguatezza for a in ["< di 6 gruppi con 10 cellule", "Campione acellulato", "Solo sangue", "Solo gel ecografico", "Assenza di cellule target", "Cellule mal valutabili / artefatti"]) and not any(
+        x in thyrocytes + architettura + atipie + [psammoma] for x in [
+            "nuclei chiarificati", "grooves focali", "grooves estesi", "pseudoinclusi 1", "pseudoinclusi >1",
+            "nucleoli evidenti focali", "nucleoli evidenti estesi", "aspetto oncocitario", "plasmocitoidi",
+            "cromatina sale e pepe", "binucleazione", "marcata monotonia associata ad atipia",
+            "macro e microfollicolare", "microfollicolare", "honey-comb (> benigno)",
+            "sovrapposizione nucleare (> maligno)", "papille", "lembi solidi", "aggregati irregolari",
+            "cellule scoese", "presenti"]):
         categoria = "Categoria I - Non Diagnostico"
 
     st.success(f"**Categoria Bethesda suggerita:** {categoria}")
