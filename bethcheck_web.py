@@ -75,24 +75,32 @@ st.markdown("---")
 if st.button("Suggerisci Categoria Bethesda"):
     categoria = "Valutazione non determinata"
 
+    # Liste lower-case per confronti robusti
+    adeguatezza_lower = [a.lower() for a in adeguatezza]
+    colloide_lower = [c.lower() for c in colloide]
+    thyrocytes_lower = [t.lower() for t in thyrocytes]
+    architettura_lower = [a.lower() for a in architettura]
+    atipie_lower = [a.lower() for a in atipie]
+    psammoma_lower = psammoma.lower()
+
     if "pseudoinclusi >1" in thyrocytes:
         categoria = "Categoria VI - Maligno (Papillare)"
     elif "grooves estesi" in thyrocytes and "nuclei chiarificati" in thyrocytes:
         categoria = "Categoria V - Sospetto Papillare"
-    elif any(t in thyrocytes for t in ["plasmocitoidi", "cromatina sale e pepe", "code citoplasmatiche", "binucleazione"]):
+    elif any(t in thyrocytes_lower for t in ["plasmocitoidi", "cromatina sale e pepe", "code citoplasmatiche", "binucleazione"]):
         categoria = "Categoria VI - Maligno (Sospetto Midollare)"
-    elif "papille" in architettura:
+    elif "papille" in architettura_lower:
         categoria = "Categoria V - Sospetto Papillare"
-    elif "microfollicolare" in architettura and not atipie:
+    elif "microfollicolare" in architettura_lower and not atipie:
         categoria = "Categoria IV - Neoplasia follicolare"
-    elif "macrofollicolare" in architettura and "nuclei piccoli (uguali a linfocita)" in thyrocytes and "nuclei scuri, contorni regolari" in thyrocytes and "Abbondante (in zolle o acquosa)" in colloide and not atipie:
+    elif "macrofollicolare" in architettura_lower and "nuclei piccoli (uguali a linfocita)" in thyrocytes and "nuclei scuri, contorni regolari" in thyrocytes and any(c in colloide for c in ["Abbondante (in zolle o acquosa)", "Moderata"]) and not atipie:
         categoria = "Categoria II - Benigno"
-    elif any(a in atipie for a in ["poche cellule con nucleo aumentato", "atipia nucleare lieve", "atipia architetturale lieve"]):
+    elif any(a in atipie_lower for a in ["poche cellule con nucleo aumentato", "atipia nucleare lieve", "atipia architetturale lieve"]):
         categoria = "Categoria III - AUS/FLUS"
-    elif "liquido cistico" in [a.lower() for a in adeguatezza] and not atipie:
+    elif "liquido cistico" in adeguatezza_lower and not atipie:
         categoria = "Categoria Ic - Inadeguato (cistico)"
-    elif any(a in adeguatezza for a in ["< di 6 gruppi con 10 cellule", "Campione acellulato", "Solo sangue", "Solo gel ecografico", "Assenza di cellule target", "Cellule mal valutabili / artefatti"]) and not any(
-        x in thyrocytes + architettura + atipie + [psammoma] for x in [
+    elif any(a in adeguatezza_lower for a in ["< di 6 gruppi con 10 cellule", "campione acellulato", "solo sangue", "solo gel ecografico", "assenza di cellule target", "cellule mal valutabili / artefatti"]) and not any(
+        x in thyrocytes_lower + architettura_lower + atipie_lower + [psammoma_lower] for x in [
             "nuclei chiarificati", "grooves focali", "grooves estesi", "pseudoinclusi 1", "pseudoinclusi >1",
             "nucleoli evidenti focali", "nucleoli evidenti estesi", "aspetto oncocitario", "plasmocitoidi",
             "cromatina sale e pepe", "binucleazione", "marcata monotonia associata ad atipia",
