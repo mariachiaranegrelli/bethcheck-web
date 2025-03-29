@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.set_page_config(page_title="BethCheck", layout="wide")
-st.image("ChatGPT Image 29 mar 2025, 04_16_17.png", width=160)
+st.image("https://i.imgur.com/0Hf2TxJ.png", width=160)
 st.title("BethCheck - Classificazione Bethesda Citologia Tiroidea")
 
 st.markdown("### Seleziona le caratteristiche del campione:")
@@ -85,14 +85,13 @@ if st.button("Suggerisci Categoria Bethesda"):
         categoria = "Categoria V - Sospetto Papillare"
     elif "microfollicolare" in architettura and not atipie:
         categoria = "Categoria IV - Neoplasia follicolare"
+    elif "macrofollicolare" in architettura and "nuclei piccoli (uguali a linfocita)" in thyrocytes and "nuclei scuri, contorni regolari" in thyrocytes and "Abbondante (in zolle o acquosa)" in colloide and not atipie:
+        categoria = "Categoria II - Benigno"
     elif any(a in atipie for a in ["poche cellule con nucleo aumentato", "atipia nucleare lieve", "atipia architetturale lieve"]):
         categoria = "Categoria III - AUS/FLUS"
     elif "liquido cistico" in [a.lower() for a in adeguatezza] and not atipie:
         categoria = "Categoria Ic - Inadeguato (cistico)"
-    elif "Adeguato (≥6 gruppi con ≥10 cellule)" in adeguatezza and "Abbondante (in zolle o acquosa)" in colloide and not atipie:
-        categoria = "Categoria II - Benigno"
     elif any(a in adeguatezza for a in ["< di 6 gruppi con 10 cellule", "Campione acellulato", "Solo sangue", "Solo gel ecografico", "Assenza di cellule target", "Cellule mal valutabili / artefatti"]) and not thyrocytes:
         categoria = "Categoria I - Non Diagnostico"
 
     st.success(f"**Categoria Bethesda suggerita:** {categoria}")
-
