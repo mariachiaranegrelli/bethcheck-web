@@ -1,66 +1,98 @@
 import streamlit as st
 
 st.set_page_config(page_title="BethCheck", layout="wide")
-
-st.image("ChatGPT Image 29 mar 2025, 04_16_17.png", width=160)
+st.image("bethcheck_logo.png", width=160)
 st.title("BethCheck - Classificazione Bethesda Citologia Tiroidea")
 
 st.markdown("### Seleziona le caratteristiche del campione:")
 
-# Checklist sezioni
+# Adeguatezza
 adeguatezza = st.multiselect("Adeguatezza", [
-    "< 6 gruppi con 10 cellule",
+    "< di 6 gruppi con 10 cellule",
     "Campione acellulato",
     "Liquido cistico",
     "Campione ipercellulato",
-    "Adeguato"
+    "Adeguato (≥6 gruppi con ≥10 cellule)",
+    "Cellule mal valutabili / artefatti",
+    "Solo sangue",
+    "Solo gel ecografico",
+    "Assenza di cellule target"
 ])
 
+# Colloide
 colloide = st.multiselect("Colloide", [
-    "Assente", "Scarsa", "Moderata", "Abbondante"
+    "Assente", "Scarsa", "Moderata", "Abbondante (in zolle o acquosa)"
 ])
 
-tireociti = st.multiselect("Tireociti", [
-    "Nuclei chiarificati",
-    "Grooves",
-    "Pseudoinclusi",
-    "Nucleoli evidenti",
-    "Plasmocitoidi",
-    "Cromatina sale e pepe",
-    "Binucleazione",
-    "Code citoplasmatiche"
+# Tireociti
+thyrocytes = st.multiselect("Tireociti", [
+    "nuclei piccoli (uguali a linfocita)",
+    "nuclei tondeggianti",
+    "nuclei ovalari",
+    "nuclei chiarificati",
+    "nuclei scuri, contorni regolari",
+    "grooves focali",
+    "grooves estesi",
+    "pseudoinclusi 1",
+    "pseudoinclusi >1",
+    "nucleoli evidenti focali",
+    "nucleoli evidenti estesi",
+    "aspetto oncocitario",
+    "plasmocitoidi",
+    "cromatina sale e pepe",
+    "binucleazione",
+    "marcata monotonia associata ad atipia",
+    "code citoplasmatiche"
 ])
 
+# Architettura
 architettura = st.multiselect("Architettura", [
-    "Microfollicolare",
-    "Macrofollicolare",
-    "Papille",
-    "Aggregati irregolari"
+    "macrofollicolare",
+    "microfollicolare",
+    "macro e microfollicolare",
+    "honey-comb (> benigno)",
+    "sovrapposizione nucleare (> maligno)",
+    "papille",
+    "lembi solidi",
+    "aggregati irregolari",
+    "cellule scoese"
 ])
 
-psammoma = st.radio("Corpi psammomatosi", ["Assenti", "Presenti"])
-atipie = st.multiselect("Tipo di atipie", [
-    "Atipia nucleare lieve",
-    "Atipie nucleari estese",
-    "Atipie architetturali estese"
+# Psammoma
+psammoma = st.radio("Corpi psammomatosi", ["presenti", "assenti"])
+
+# Tipo di atipie
+atipie = st.multiselect("Tipo di Atipie", [
+    "poche cellule con nucleo aumentato",
+    "atipia nucleare lieve",
+    "atipia architetturale lieve",
+    "atipie nucleari estese",
+    "atipie architetturali estese"
 ])
 
-# Logica base
+# Suggerimento categoria
 st.markdown("---")
 if st.button("Suggerisci Categoria Bethesda"):
-    if "Pseudoinclusi" in tireociti and "Papille" in architettura:
+    categoria = "Valutazione non determinata"
+
+    if "pseudoinclusi >1" in thyrocytes:
         categoria = "Categoria VI - Maligno (Papillare)"
-    elif "Microfollicolare" in architettura and not atipie:
+    elif "grooves estesi" in thyrocytes and "nuclei chiarificati" in thyrocytes:
+        categoria = "Categoria V - Sospetto Papillare"
+    elif any(t in thyrocytes for t in ["plasmocitoidi", "cromatina sale e pepe", "code citoplasmatiche", "binucleazione"]):
+        categoria = "Categoria VI - Maligno (Sospetto Midollare)"
+    elif "papille" in architettura:
+        categoria = "Categoria V - Sospetto Papillare"
+    elif "microfollicolare" in architettura and not atipie:
         categoria = "Categoria IV - Neoplasia follicolare"
-    elif "Liquido cistico" in adeguatezza and not atipie:
-        categoria = "Categoria Ic - Inadeguato (cistico)"
-    elif "Adeguato" in adeguatezza and "Abbondante" in colloide and not atipie:
-        categoria = "Categoria II - Benigno"
-    elif atipie:
+    elif any(a in atipie for a in ["poche cellule con nucleo aumentato", "atipia nucleare lieve", "atipia architetturale lieve"]):
         categoria = "Categoria III - AUS/FLUS"
-    elif "Campione acellulato" in adeguatezza:
+    elif "liquido cistico" in [a.lower() for a in adeguatezza] and not atipie:
+        categoria = "Categoria Ic - Inadeguato (cistico)"
+    elif "Adeguato (≥6 gruppi con ≥10 cellule)" in adeguatezza and "Abbondante (in zolle o acquosa)" in colloide and not atipie:
+        categoria = "Categoria II - Benigno"
+    elif any(a in adeguatezza for a in ["< di 6 gruppi con 10 cellule", "Campione acellulato", "Solo sangue", "Solo gel ecografico", "Assenza di cellule target", "Cellule mal valutabili / artefatti"]) and not thyrocytes:
         categoria = "Categoria I - Non Diagnostico"
-    else:
-        categoria = "Valutazione non determinata"
 
     st.success(f"**Categoria Bethesda suggerita:** {categoria}")
+
