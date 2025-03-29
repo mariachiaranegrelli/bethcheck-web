@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="BethCheck", layout="wide")
 
-st.image("https://i.imgur.com/0Hf2TxJ.png", width=160)
+st.image("bethcheck_logo.png", width=160)
 st.title("BethCheck - Classificazione Bethesda Citologia Tiroidea")
 
 st.markdown("### Seleziona le caratteristiche del campione:")
