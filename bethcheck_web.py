@@ -102,3 +102,4 @@ if st.button("Suggerisci Categoria Bethesda"):
         categoria = "Categoria I - Non Diagnostico"
 
     st.success(f"**Categoria Bethesda suggerita:** {categoria}")
+    
